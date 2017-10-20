@@ -114,8 +114,10 @@ class BinarySound(object):
         header_pos = self.header_position(wf)
         header_end_idx = header_pos + len(self.header_word)
         wf = wf > 0
-        m = reshape(wf[header_end_idx:(header_end_idx + self.phrase_data_frm)],
-                    (-1, self.word_size_frm))
+        m = wf[header_end_idx:(header_end_idx + self.phrase_data_frm)]
+        size_to_make_it_a_multiple_of_word_size = (len(m) - (len(m) % self.word_size_frm))
+        m = m[:size_to_make_it_a_multiple_of_word_size]
+        m = reshape(m, (-1, self.word_size_frm))
         m = m.sum(axis=0).reshape((-1, self.repetition))
         m = m.sum(axis=1)
         return (m / float(self.repetition * self.redundancy) > 0.5).astype(int)
