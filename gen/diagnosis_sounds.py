@@ -13,15 +13,20 @@ def ums_to_01_array(ums, n_ums_bits):
     return array(map(lambda x: int(x == '1'), ums_bits_str_format.format(ums)))
 
 
+
 class BinarySound(object):
-    def __init__(self, redundancy, repetition, nbits=50, header_size_words=1):
+    def __init__(self, redundancy, repetition, nbits=50, header_size_words=1, header_pattern=None):
         """
-
-        :param redundancy:
-        :param repetition:
-        :param nbits:
-        :param header_size_words:
-
+        :param redundancy: num of times a word will be repeated (to implement error correction)
+        :param repetition: num of times to repeat each element of a pattern.
+        :param nbits: num of bits of a pattern. An {0,1}-array to be encoded will have to be this size.
+            Also, if a header_pattern is explicitly given, it will also have to be this size.
+        :param header_size_words: the size (in num of words) of the header
+        :param header_pattern: specifies the header pattern. This pattern will be repeated (i.e. it's elements
+            repeated several times (010-->000011110000) and tiled (header_size_words times). Can be:
+            * None: Default. Will choose a random array of 0s and 1s
+            * an explicit array of nbits 0s and 1s to use for the header
+            * a string indicating a method to generate it (for now, choices are "halfhalf" or "alternating")
         >>> from oto.sound.diagnosis_sounds import BinarySound
         >>> from numpy import *
         >>> from numpy.random import randint
@@ -45,13 +50,25 @@ class BinarySound(object):
         self.word_size_frm = int(self.nbits * self.repetition)
         # redundancy: how many times to repeat a word to make (along with header) a phrase
         self.redundancy = redundancy
-        header_size_frm = self.word_size_frm * header_size_words
-        self.header_bits = randint(0, 2, nbits)
-        self.header_word = tile(repeat(self.header_bits, self.repetition), self.header_size_words)
+        if header_pattern is None:
+            header_pattern = randint(0, 2, nbits)
+        elif isinstance(header_pattern, basestring):
+            if header_pattern == 'halfhalf':
+                header_pattern = hstack((ones(int(ceil(nbits / 2))), zeros(int(floor(nbits / 2))))).astype(int)
+            elif header_pattern == 'alternating':
+                header_pattern = array([1, 0] * int(ceil(nbits / 2)))[:nbits]
+            else:
+                raise ValueError("header_pattern not recognized: {}".format(header_pattern))
+        else:
+            assert len(header_pattern) == nbits, "header_pattern must have nbits={}".format(nbits)
+            assert set(unique(header_pattern).astype(int)) == {0, 1}, "header_pattern must be an array of 0s and 1s"
+        self.header_pattern = header_pattern
+        self.header_word = tile(repeat(self.header_pattern, self.repetition), self.header_size_words)
         self.phrase_data_frm = self.redundancy * self.word_size_frm
 
     @classmethod
-    def for_audio_params(cls, nbits=50, freq=3000, chk_size_frm=43008, sr=44100, header_size_words=1):
+    def for_audio_params(cls, nbits=50, freq=3000, chk_size_frm=43008, sr=44100, header_size_words=1,
+                         header_pattern=None):
         """
         Construct a BinarySound object for a set of audio params
         :param nbits: num of bits of a word of data we want to encode
@@ -59,6 +76,11 @@ class BinarySound(object):
         :param chk_size_frm: chunk size (in frames) of the sounds we'll be using (determines
         :param sr: sample rate of the targeted sound
         :param header_size_words: header size (increasing it will decrease error rate, but increase computation time)
+        :param header_pattern: specifies the header pattern. This pattern will be repeated (i.e. it's elements
+            repeated several times (010-->000011110000) and tiled (header_size_words times). Can be:
+            * None: Default. Will choose a random array of 0s and 1s
+            * an explicit array of nbits 0s and 1s to use for the header
+            * a string indicating a method to generate it (for now, choices are "halfhalf" or "alternating")
         :return: a BinarySound object
         >>> from oto.sound.diagnosis_sounds import BinarySound
         >>> from numpy import *
@@ -81,7 +103,8 @@ class BinarySound(object):
         # redundancy: how many times to repeat a word to make (along with header) a phrase
         redundancy = (int(floor((chk_size_frm / 2) / word_size_frm) - header_size_words))
 
-        self = cls(nbits=nbits, redundancy=redundancy, repetition=repetition, header_size_words=header_size_words)
+        self = cls(nbits=nbits, redundancy=redundancy, repetition=repetition, header_size_words=header_size_words,
+                   header_pattern=header_pattern)
         self.freq = freq
         self.sr = sr
         self.chk_size_frm = chk_size_frm
