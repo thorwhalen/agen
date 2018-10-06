@@ -13,7 +13,6 @@ def ums_to_01_array(ums, n_ums_bits):
     return array(map(lambda x: int(x == '1'), ums_bits_str_format.format(ums)))
 
 
-
 class BinarySound(object):
     def __init__(self, redundancy, repetition, nbits=50, header_size_words=1, header_pattern=None):
         """
