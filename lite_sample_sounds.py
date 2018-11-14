@@ -68,7 +68,10 @@ class AnnotatedWaveform(object):
         for chk, tag in self.chk_and_tag_gen(chk_tags):
             wf += list(chk)
             if tag == current_tag:
+                # TODO: Shame!
+                slice_of_tag[tag][-1] = list(slice_of_tag[tag][-1])
                 slice_of_tag[tag][-1][1] += self.chk_size_frm
+                slice_of_tag[tag][-1] = tuple(slice_of_tag[tag][-1])
             else:
                 current_tag = tag
                 slice_of_tag[tag].append((bt_cursor, bt_cursor + self.chk_size_frm))
