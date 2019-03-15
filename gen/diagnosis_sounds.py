@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from numpy import *
 from numpy.random import randint
@@ -10,7 +10,7 @@ from ut.util.time import utcnow_ms
 
 def ums_to_01_array(ums, n_ums_bits):
     ums_bits_str_format = "{:0" + str(n_ums_bits) + "b}"
-    return array(map(lambda x: int(x == '1'), ums_bits_str_format.format(ums)))
+    return array([int(x == '1') for x in ums_bits_str_format.format(ums)])
 
 
 class BinarySound(object):
@@ -51,7 +51,7 @@ class BinarySound(object):
         self.redundancy = redundancy
         if header_pattern is None:
             header_pattern = randint(0, 2, nbits)
-        elif isinstance(header_pattern, basestring):
+        elif isinstance(header_pattern, str):
             if header_pattern == 'halfhalf':
                 header_pattern = hstack((ones(int(ceil(nbits / 2))), zeros(int(floor(nbits / 2))))).astype(int)
             elif header_pattern == 'alternating':
@@ -176,7 +176,7 @@ class WfGen(object):
         if amplitude < 0.0: amplitude = 0.0
         self.amplitude = float(amplitude)
         self.lookup_table_freqs = (arange(int(buf_size_frm / 2)) + 1) / self.buf_size_s
-        self.lookup_tables = map(self.mk_lookup_table, self.lookup_table_freqs)
+        self.lookup_tables = list(map(self.mk_lookup_table, self.lookup_table_freqs))
 
     def mk_sine_wave_from_lookup_table(self, lookup_table):
         period = len(lookup_table)
@@ -202,7 +202,7 @@ class WfGen(object):
         freq = float(freq)
         period = int(self.sr / freq)
         lookup_table = [self.amplitude * math.sin(2.0 * math.pi * float(freq) * (float(i % period) / float(self.sr)))
-                        for i in xrange(period)]
+                        for i in range(period)]
         return lookup_table
 
     def mk_wf_from_freq_weight_array(self, n_frm, freq_weight_array):
@@ -222,7 +222,7 @@ class TimeSound(WfGen):
         self.buf_size_ms = self.buf_size_s * 1000
 
     def ums_to_01_array(self, ums):
-        return array(map(lambda x: int(x == '1'), self.ums_bits_str_format.format(ums)))
+        return array([int(x == '1') for x in self.ums_bits_str_format.format(ums)])
 
     def freq_weight_array_for_ums(self, ums):
         return tile(self.ums_to_01_array(ums), self.n_freqs_per_ums_bit)
@@ -234,7 +234,7 @@ class TimeSound(WfGen):
     def timestamped_wf(self, offset_ums=0, n_bufs=21, n_bufs_per_tick=1):
         wf = list()
         ums = offset_ums
-        for buf_idx in xrange(n_bufs):
+        for buf_idx in range(n_bufs):
             wf.extend(list(self.ums_to_wf(ums, n_bufs=n_bufs_per_tick)))
             ums = int(ums + n_bufs_per_tick * self.buf_size_ms)
         return array(wf)
@@ -242,7 +242,7 @@ class TimeSound(WfGen):
     def spectr_of_time(self, offset_ums=0, n_bufs=21, n_bufs_per_tick=1):
         wf = list()
         ums = offset_ums
-        for buf_idx in xrange(n_bufs):
+        for buf_idx in range(n_bufs):
             wf.append(list(self.freq_weight_array_for_ums(ums)))
             if n_bufs_per_tick > 1:
                 wf.append(list(zeros(self.n_freqs_for_ums)))
@@ -279,3 +279,4 @@ def mk_sounds_with_timed_bleeps(bleep_loc_ms,
     if save_filepath:
         sf.write(open(save_filepath, 'w'), wf, sr)
     return wf
+

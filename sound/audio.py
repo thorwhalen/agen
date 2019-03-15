@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from numpy import array, ndim, argmin, max, log10, ceil, int16, hstack, zeros
 
@@ -64,11 +64,11 @@ def plot_melspectrogram(spect_mat, sr=default_sr, hop_length=512, name=None):
 def wf_and_sr(*args, **kwargs):
     if len(args) > 0:
         args_0 = args[0]
-        if isinstance(args_0, basestring):
+        if isinstance(args_0, str):
             kwargs['filepath'] = args_0
         elif isinstance(args_0, tuple):
             kwargs['wf'], kwargs['sr'] = args_0
-    kwargs_keys = kwargs.keys()
+    kwargs_keys = list(kwargs.keys())
     if 'wf' in kwargs_keys:
         return kwargs['wf'], kwargs['sr']
 
@@ -115,7 +115,7 @@ class Sound(object):
     def from_(cls, sound):
         if isinstance(sound, tuple) and len(sound) == 2:  # then it's a (wf, sr) tuple
             return cls(sound[0], sound[1])
-        elif isinstance(sound, basestring) and os.path.isfile(sound):
+        elif isinstance(sound, str) and os.path.isfile(sound):
             return cls.from_file(sound)
         elif isinstance(sound, dict):
             if 'wf' in sound and 'sr' in sound:
