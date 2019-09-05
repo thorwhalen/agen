@@ -59,14 +59,17 @@ class Voicer:
             if voice['name'] == name:
                 return voice['id']
 
-    def say_the_time(self):
-        self.say(dt.utcnow().strftime(self.time_format))
+    def say_the_time(self, verbose=False):
+        s = dt.utcnow().strftime(self.time_format)
+        if verbose:
+            print(s)
+        self.say(s)
 
-    def tell_time_continuously(self, every_secs=5):
+    def tell_time_continuously(self, every_secs=5, verbose=False):
         try:
             while True:
                 tic = time.time()
-                self.say_the_time()
+                self.say_the_time(verbose=verbose)
                 elapsed = time.time() - tic
                 time.sleep(max(0, every_secs - elapsed))
         except KeyboardInterrupt:
@@ -75,7 +78,7 @@ class Voicer:
 
 
 def tell_time_continuously(every_secs=3, voice=None, volume=1, rate=200, engine_kwargs=None,
-                           time_format=DFLT_TIME_FORMAT):
+                           time_format=DFLT_TIME_FORMAT, verbose=False):
     """
     Loop, and say the time regularly.
 
@@ -95,7 +98,7 @@ def tell_time_continuously(every_secs=3, voice=None, volume=1, rate=200, engine_
         print(Voicer().voices_df)
     else:
         voicer = Voicer(voice=voice, volume=volume, rate=rate, engine_kwargs=engine_kwargs, time_format=time_format)
-        voicer.tell_time_continuously(every_secs)
+        voicer.tell_time_continuously(every_secs, verbose=verbose)
 
 
 if __name__ == '__main__':
