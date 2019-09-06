@@ -1,6 +1,4 @@
-
-
-from numpy import array, ndim, argmin, max, log10, ceil, int16, hstack, zeros
+from numpy import array, ndim, argmin, max, log10, ceil, int16, hstack, zeros, linspace
 
 from numpy.random import randint
 import soundfile as sf
@@ -9,6 +7,8 @@ import librosa
 import librosa.display
 import matplotlib.pylab as plt
 from IPython.display import Audio
+
+from agen.utils.date_ticks import str_ticks
 
 default_sr = 44100
 default_wf_type = int16
@@ -59,6 +59,25 @@ def plot_melspectrogram(spect_mat, sr=default_sr, hop_length=512, name=None):
     plt.colorbar(format='%+02.0f dB')
     # Make the figure layout compact
     plt.tight_layout()
+
+
+def plot_wf(wf, sr=None, figsize=(15, 5), offset_s=0, ax=None, **kwargs):
+    if figsize is not None:
+        plt.figure(figsize=figsize)
+    _ax = ax or plt
+    if sr is not None:
+        _ax.plot(offset_s + linspace(start=0, stop=len(wf) / float(sr), num=len(wf)), wf, **kwargs)
+    else:
+        _ax.plot(wf, **kwargs)
+    if _ax == plt:
+        _xticks, _ = plt.xticks()
+        plt.xticks(_xticks, str_ticks(ticks=_xticks, ticks_unit=1))
+        plt.margins(x=0)
+    else:
+        _xticks = _ax.get_xticks()
+        _ax.set_xticks(_xticks)
+        _ax.set_xticklabels(str_ticks(ticks=_xticks, ticks_unit=1))
+        _ax.margins(x=0)
 
 
 def wf_and_sr(*args, **kwargs):
