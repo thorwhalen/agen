@@ -1,5 +1,3 @@
-
-
 from numpy import *
 from numpy.random import randint
 from itertools import islice, count
@@ -279,4 +277,3 @@ def mk_sounds_with_timed_bleeps(bleep_loc_ms,
     if save_filepath:
         sf.write(open(save_filepath, 'w'), wf, sr)
     return wf
-
