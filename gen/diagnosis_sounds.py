@@ -3,7 +3,7 @@ from numpy.random import randint
 from itertools import islice, count
 
 from ut.util.uiter import window
-from ut.util.time import utcnow_ms
+from ut.util.utime import utcnow_ms
 
 
 def ums_to_01_array(ums, n_ums_bits):
