@@ -1,23 +1,24 @@
 # agen
 Utils to generate audio
 
-Requires to clone https://github.com/thorwhalen/ut and put ut in your PYTHONPATH.
-
-You should be able to do things like:
-    import ut
-
-You'll also need (if you don't have them already) some libraries such as:
-    librosa
-    soundfile
+Depending on what you use, you might need some libraries such as:
+```
+librosa
+soundfile
+pyttsx3 (for voiced_time.py)
+```
 
 If you get an import error on X, just try to do:
-    pip install X
+```
+pip install X
+```
 in your terminal.
 
-If that doesn't work, google the library and see how to install it (for e.g. soundfile is actually
-obtained by doing
-    pip install pysoundfile
-
+If that doesn't work, google the library and see how to install it 
+For e.g. soundfile is actually obtained by doing
+```
+pip install pysoundfile
+``` 
 Buggers!
 
 
