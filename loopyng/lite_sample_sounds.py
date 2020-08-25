@@ -52,9 +52,9 @@ class AnnotatedWaveform(object):
         self.freq = freq
         self.max_amplitude = max_amplitude
         self._default_kwargs = {'chk_size_frm': chk_size_frm,
-                               'freq': freq,
-                               'sr': sr,
-                               'max_amplitude': max_amplitude}
+                                'freq': freq,
+                                'sr': sr,
+                                'max_amplitude': max_amplitude}
 
     def chk_and_tag_gen(self, chk_tags=('random', 'pure_tone', 'triangular_tone', 'square_tone')):
         for tag in chk_tags:

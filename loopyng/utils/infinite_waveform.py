@@ -1,6 +1,7 @@
 from random import random
 import numpy as np
 
+
 class InfiniteWaveform(object):
     """
     A tiny little class emulating an infinite waveform with a given spectrum.

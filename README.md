@@ -1,4 +1,4 @@
-# agen
+# loopying
 Utils to generate audio
 
 Depending on what you use, you might need some libraries such as:
