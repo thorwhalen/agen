@@ -23,7 +23,6 @@ import os
 
 # name = os.path.split(os.path.dirname(__file__))[-1]
 
-# current_version = current_pypi_version(name)
 version = next_version_for_package(name)
 print(f"---> Next pypi version for {name}: {version}")
 
